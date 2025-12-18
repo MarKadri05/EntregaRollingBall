@@ -1,0 +1,56 @@
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+#include "TimeTrap.generated.h"
+
+
+UCLASS()
+class ENTREGAROLLINGBALL_API ATimeTrap : public AActor
+{
+	GENERATED_BODY()
+	
+public:	
+	ATimeTrap();
+
+protected:
+	virtual void BeginPlay() override;
+	
+private:
+#pragma region Components
+	UPROPERTY(EditDefaultsOnly)
+	UStaticMeshComponent* MeshOff;
+	
+	UPROPERTY(EditDefaultsOnly)
+	UStaticMeshComponent* MeshOn;
+	
+	UPROPERTY(EditDefaultsOnly)
+	class UBoxComponent* TriggerBox;
+#pragma endregion
+	
+	// Detección del player
+	UPROPERTY()
+	AActor* OverlappingPlayer = nullptr;
+	
+	// Tiempo de retraso antes de activar la trampa
+	float ActivationDelay = 1.2f;
+	
+	// Booleanos de comprobación para ver si ha detectado al player o está activa la trampa
+	bool bTrapActive = false;
+	bool bPlayerDetected = false;
+	
+	FTimerHandle TrapTimerHandle;
+	FTimerHandle DamageTimerHandle;
+	
+	// Overlap con el player
+	UFUNCTION()
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
+	UFUNCTION()
+	void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	
+	void ToggleTrap();
+	void ApplyDamage();
+};

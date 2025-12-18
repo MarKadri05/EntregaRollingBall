@@ -2,10 +2,8 @@
 #include "Projectile.h"
 #include "Components/SphereComponent.h"
 
-// Sets default values
 ATurret::ATurret()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	
 	TurretBase = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GunMesh"));
@@ -13,13 +11,14 @@ ATurret::ATurret()
 	RangeSphere = CreateDefaultSubobject<USphereComponent>(TEXT("RangeSphere"));
 	ProjectileSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("ProjectileSpawnPoint"));
 	
+	RangeSphere->SetSphereRadius(350.f);
+	
 	SetRootComponent(TurretBase);
 	TurretTower->SetupAttachment(GetRootComponent());
 	RangeSphere->SetupAttachment(GetRootComponent());
 	ProjectileSpawnPoint->SetupAttachment(TurretTower);
 }
 
-// Called when the game starts or when spawned
 void ATurret::BeginPlay()
 {
 	Super::BeginPlay();
@@ -28,13 +27,13 @@ void ATurret::BeginPlay()
 	RangeSphere->OnComponentEndOverlap.AddDynamic(this, &ATurret::OnEndOverlap);
 }
 
-//Funcion encargada de spawnear los proyectiles
+// Función encargada de spawnear los proyectiles
 void ATurret::SpawnProjectile() const
 {
 	GetWorld()->SpawnActor<AProjectile>(ProjectileClass, ProjectileSpawnPoint->GetComponentLocation(), ProjectileSpawnPoint->GetComponentRotation());
 }
 
-// Called every frame
+// Rotar torreta cuando ve al player
 void ATurret::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -51,6 +50,8 @@ void ATurret::Tick(float DeltaTime)
 	}
 }
 
+
+// El player entra en el rango de la torreta
 void ATurret::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -62,6 +63,7 @@ void ATurret::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherA
 	}
 }
 
+// El player sale del rango de la torreta
 void ATurret::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex)
 {

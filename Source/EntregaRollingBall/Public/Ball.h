@@ -3,7 +3,6 @@
 #include "CoreMinimal.h"
 #include "InputActionValue.h"
 #include "MyPlayerController.h"
-#include "Components/SphereComponent.h"
 #include "GameFramework/Pawn.h"
 #include "Ball.generated.h"
 
@@ -13,20 +12,18 @@ class ENTREGAROLLINGBALL_API ABall : public APawn
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this pawn's properties
 	ABall();
 	void SetBallController(AMyPlayerController* MyPlayerController);
 	
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-	void NotifyActorBeginOverlap(AActor* OtherActor);
+	
 	void Move(const FInputActionValue& InputActionValue);
 	void Jump(const FInputActionValue& InputActionValue);
+	
+	UFUNCTION()
+	void OnMeshBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
 private:	
 #pragma region Components

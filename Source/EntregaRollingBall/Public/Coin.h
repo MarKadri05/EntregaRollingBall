@@ -10,12 +10,11 @@ class ENTREGAROLLINGBALL_API ACoin : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	ACoin();
-	// Called every frame
+
     virtual void Tick(float DeltaTime) override;
+	
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 private:
@@ -26,6 +25,10 @@ private:
 	UPROPERTY(EditAnywhere, Category= "Component")
 	UStaticMeshComponent* MyMesh;
 
+	// La esfera se encarga de la colision
+	UPROPERTY(EditAnywhere, Category="Component")
+	class USphereComponent* CollisionSphere;
+	
 	UPROPERTY(EditAnywhere, Category= "Component")
 	FRotator MyRotator;
 #pragma endregion

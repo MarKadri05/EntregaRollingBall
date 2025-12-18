@@ -1,10 +1,8 @@
 #include "BlinkingPlatform.h"
 
-// Sets default values
 ABlinkingPlatform::ABlinkingPlatform()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 	PlatformMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlatformMesh"));
 	
@@ -13,19 +11,14 @@ ABlinkingPlatform::ABlinkingPlatform()
 	PlatformMesh->SetMassOverrideInKg(NAME_None, 1000000);
 }
 
-// Called when the game starts or when spawned
+// Iniciar temporizador
 void ABlinkingPlatform::BeginPlay()
 {
 	Super::BeginPlay();
 	GetWorldTimerManager().SetTimer(BlinkTimerHandle, this, &ABlinkingPlatform::Blink, 2, true);
 }
 
-// Called every frame
-void ABlinkingPlatform::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
+// Cambiar estado de la plataforma
 void ABlinkingPlatform::Blink()
 {
 	if (bStartsVisible)

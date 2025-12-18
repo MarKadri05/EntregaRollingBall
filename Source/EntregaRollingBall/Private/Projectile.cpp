@@ -2,7 +2,6 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
-// Sets default values
 AProjectile::AProjectile()
 {
 	PrimaryActorTick.bCanEverTick = false;
@@ -17,16 +16,15 @@ AProjectile::AProjectile()
 	ProjectileMovement->MaxSpeed = 1300.f;
 }
 
-// Called when the game starts or when spawned
 void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	
 	ProjectileMesh->OnComponentHit.AddDynamic(this, &AProjectile::ProjectileHit);
-	//El sistema de particulas acompania al componente
 	UGameplayStatics::SpawnEmitterAttached(TrailParticles, ProjectileMesh);
 }
 
+// Función que se activa cuando el proyectil impacta contra algo
 void AProjectile::ProjectileHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	FVector NormalImpulse, const FHitResult& Hit)
 {

@@ -1,10 +1,8 @@
 #include "MovingPlatform.h"
 #include "Components/SplineComponent.h"
 
-// Sets default values
 AMovingPlatform::AMovingPlatform()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
@@ -14,12 +12,14 @@ AMovingPlatform::AMovingPlatform()
 	SetRootComponent(Root);
 	PlatformMesh->SetupAttachment(Root);
 	Spline->SetupAttachment(Root);
+	
+	// Configuración de la plataforma
 	PlatformMesh->SetSimulatePhysics(true);
 	PlatformMesh->SetMassOverrideInKg(NAME_None, 100000000);
 	PlatformMesh->SetEnableGravity(false);
 }
 
-// Called when the game starts or when spawned
+// Calcular puntos del spline y a cual tiene que moverse
 void AMovingPlatform::BeginPlay()
 {
 	Super::BeginPlay();
@@ -29,7 +29,7 @@ void AMovingPlatform::BeginPlay()
 	PlatformMesh->SetPhysicsLinearVelocity(CurrentDirection * Speed);
 }
 
-// Called every frame
+// Cambiar al siguiente al llegar al punto actual
 void AMovingPlatform::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -40,6 +40,7 @@ void AMovingPlatform::Tick(float DeltaTime)
 	}
 }
 
+// Calcular siguiente punto del spline al que ir
 void AMovingPlatform::CalculateNewDestination()
 {
 	CurrentDestination = Spline->GetLocationAtSplinePoint(CurrentPointIndex, ESplineCoordinateSpace::World);
