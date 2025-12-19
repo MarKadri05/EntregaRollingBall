@@ -82,6 +82,7 @@ void ABall::OnMeshBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 	
 	if (OtherActor->ActorHasTag("Coin"))
 	{
+		UGameplayStatics::SpawnSound2D(GetWorld(), PickUpCoinSound);
 		BallController->UpdateScore();
 		OtherActor->Destroy();
 	} 
@@ -117,12 +118,23 @@ void ABall::Move(const FInputActionValue& InputActionValue)
 // Acción de saltar
 void ABall::Jump(const FInputActionValue& InputActionValue)
 {
-	FVector RayEnd = GetActorLocation() + MyMesh->GetCollisionShape().GetExtent().Z * FVector::DownVector;
+	FHitResult HitResult;
+	FVector RayStart = GetActorLocation();
+	FVector RayEnd = RayStart + FVector::DownVector * (MyMesh->GetCollisionShape().GetExtent().Z * 1.10f);
 	
-	if (GetWorld()->LineTraceTestByChannel(GetActorLocation(), RayEnd, ECC_GameTraceChannel1))
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+	
+	// LineTraceSingleByChannel: Raycast que devuelve el primer objeto que toque 
+	// ECC_GameTraceChannel1: Canal de colisión para la traza
+	DrawDebugLine(GetWorld(), RayStart, RayEnd, FColor::Red, false, 1.f, 0, 2.f);
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, RayStart, RayEnd, ECC_GameTraceChannel1, Params))
 	{
-		UGameplayStatics::SpawnSoundAtLocation(GetWorld(), JumpSound, GetActorLocation());
-		MyMesh->AddImpulse(FVector::UpVector * JumpForce);
+		if (HitResult.GetActor()->ActorHasTag("Jumpable"))
+		{
+			UGameplayStatics::SpawnSoundAtLocation(GetWorld(), JumpSound, GetActorLocation());
+			MyMesh->AddImpulse(FVector::UpVector * JumpForce);
+		}
 	}
 }
 
@@ -130,6 +142,7 @@ void ABall::Jump(const FInputActionValue& InputActionValue)
 void ABall::OnDamageTaken(AActor* DamagedActor, float Damage, const class UDamageType* DamageType,
                           class AController* InstigatedBy, AActor* DamageCauser)
 {
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation());
 	BallController->OnLoseLife();
 	this->Destroy();
 }

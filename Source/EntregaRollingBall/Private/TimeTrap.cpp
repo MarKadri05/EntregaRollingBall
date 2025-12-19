@@ -67,15 +67,20 @@ void ATimeTrap::ToggleTrap()
 	
 	// Capacidad de aplicar daño si la trampa esta activa
 	if (bTrapActive){
-		GetWorldTimerManager().SetTimer(DamageTimerHandle, this, &ATimeTrap::ApplyDamage, 0.25f, true, 0.f);
+		UGameplayStatics::SpawnSoundAtLocation(GetWorld(), ActivateTrapSound, GetActorLocation());
+		GetWorldTimerManager().SetTimer(DamageTimerHandle, this,
+			&ATimeTrap::ApplyDamage, 0.25f, true, 0.f);
 	} else
 	{
 		GetWorldTimerManager().ClearTimer(DamageTimerHandle);
+		UGameplayStatics::SpawnSoundAtLocation(GetWorld(), DeactivateTrapSound, GetActorLocation());
 	}
 	
 	// Desactivar trampa
 	if (bTrapActive)
+	{
 		GetWorldTimerManager().SetTimer(TrapTimerHandle, this, &ATimeTrap::ToggleTrap, ActivationDelay, false);
+	}
 }
 
 // Hacer daño al player si pisa la trampa cuando esta activa

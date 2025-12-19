@@ -28,10 +28,7 @@ private:
 	class UBoxComponent* TriggerBox;
 #pragma endregion
 	
-	// Detección del player
-	UPROPERTY()
-	AActor* OverlappingPlayer = nullptr;
-	
+#pragma region Data
 	// Tiempo de retraso antes de activar la trampa
 	float ActivationDelay = 1.2f;
 	
@@ -41,8 +38,18 @@ private:
 	
 	FTimerHandle TrapTimerHandle;
 	FTimerHandle DamageTimerHandle;
+#pragma endregion
 	
-	// Overlap con el player
+	UPROPERTY(EditDefaultsOnly, Category= "Sounds")
+	USoundBase* ActivateTrapSound;
+	
+	UPROPERTY(EditDefaultsOnly, Category= "Sounds")
+	USoundBase* DeactivateTrapSound;
+	
+	// Detección del player
+	UPROPERTY()
+	AActor* OverlappingPlayer = nullptr;
+	
 	UFUNCTION()
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

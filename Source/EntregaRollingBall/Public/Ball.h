@@ -63,9 +63,14 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category= "Sounds")
 	USoundBase* JumpSound;
 	
+	UPROPERTY(EditDefaultsOnly, Category= "Sounds")
+	USoundBase* PickUpCoinSound;
+	
+	UPROPERTY(EditDefaultsOnly, Category= "Sounds")
+	USoundBase* DeathSound;
+	
 	// Velocidad mínima del player para que suene el audio
-	UPROPERTY(EditDefaultsOnly, Category = "Audio")
-	float MoveSoundMinSpeed = 50.f;
+	float MoveSoundMinSpeed = 200.f;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Audio")
 	UAudioComponent* MoveAudioComponent;

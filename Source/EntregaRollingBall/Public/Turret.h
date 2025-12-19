@@ -40,17 +40,17 @@ private:
 	UPROPERTY()
 	AActor* TargetActor = nullptr;
 	
-	UPROPERTY(EditDefaultsOnly, Category= "Data")
 	float RotationSpeed = 5.f;
-
-	UPROPERTY(EditDefaultsOnly, Category= "Data")
 	float FireRate = 2.f;
-
+	
 	UPROPERTY(EditDefaultsOnly, Category= "Data")
 	TSubclassOf<class AProjectile> ProjectileClass;
 
 	FTimerHandle FireRateTimer;
 #pragma endregion
+	
+	UPROPERTY(EditDefaultsOnly, Category= "Sounds")
+	USoundBase* FireSound;
 	
 	void SpawnProjectile() const;
 };

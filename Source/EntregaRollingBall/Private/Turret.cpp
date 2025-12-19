@@ -1,6 +1,7 @@
 #include "Turret.h"
 #include "Projectile.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 ATurret::ATurret()
 {
@@ -11,7 +12,7 @@ ATurret::ATurret()
 	RangeSphere = CreateDefaultSubobject<USphereComponent>(TEXT("RangeSphere"));
 	ProjectileSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("ProjectileSpawnPoint"));
 	
-	RangeSphere->SetSphereRadius(350.f);
+	RangeSphere->SetSphereRadius(800.f);
 	
 	SetRootComponent(TurretBase);
 	TurretTower->SetupAttachment(GetRootComponent());
@@ -30,7 +31,9 @@ void ATurret::BeginPlay()
 // Función encargada de spawnear los proyectiles
 void ATurret::SpawnProjectile() const
 {
-	GetWorld()->SpawnActor<AProjectile>(ProjectileClass, ProjectileSpawnPoint->GetComponentLocation(), ProjectileSpawnPoint->GetComponentRotation());
+	UGameplayStatics::SpawnSoundAtLocation(GetWorld(), FireSound, GetActorLocation());
+	GetWorld()->SpawnActor<AProjectile>(ProjectileClass, ProjectileSpawnPoint->GetComponentLocation(),
+		ProjectileSpawnPoint->GetComponentRotation());
 }
 
 // Rotar torreta cuando ve al player
