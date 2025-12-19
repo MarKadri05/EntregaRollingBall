@@ -25,19 +25,32 @@ void AMovingPlatform::BeginPlay()
 	Super::BeginPlay();
 	
 	SplinePointsNum = Spline->GetNumberOfSplinePoints();
-	CalculateNewDestination();
-	PlatformMesh->SetPhysicsLinearVelocity(CurrentDirection * Speed);
+	CurrentPointIndex = 0;
+	MovePlatform();
 }
 
-// Cambiar al siguiente al llegar al punto actual
+// Comprobar si la plataforma ha llegado al punto de destino
 void AMovingPlatform::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	if (bIsWaiting) return;
+	
 	if (FVector::Dist(PlatformMesh->GetComponentLocation(), CurrentDestination) < 5.0f)
 	{
-		CalculateNewDestination();
-		PlatformMesh->SetPhysicsLinearVelocity(CurrentDirection * Speed);
+		bIsWaiting = true;
+		PlatformMesh->SetPhysicsLinearVelocity(FVector::ZeroVector);
+		GetWorldTimerManager().SetTimer(MovementTimerHandle, this,
+		&AMovingPlatform::MovePlatform,3, false);
 	}
+}
+
+// Mover la plataforma
+void AMovingPlatform::MovePlatform()
+{
+	bIsWaiting = false;
+	CalculateNewDestination();
+	PlatformMesh->SetPhysicsLinearVelocity(CurrentDirection * Speed);
 }
 
 // Calcular siguiente punto del spline al que ir

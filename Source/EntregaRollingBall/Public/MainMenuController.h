@@ -13,5 +13,5 @@ protected:
 	
 private:
 	UPROPERTY(EditDefaultsOnly, Category="UI")
-	TSubclassOf<UUserWidget> WBP_MainMenu;
+	TSubclassOf<UUserWidget> Wbp_MainMenu;
 };

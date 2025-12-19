@@ -4,20 +4,25 @@
 #include "EnhancedInputComponent.h"
 #include "MyPlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/AudioComponent.h"
 
 ABall::ABall()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 	
 	// Creación de componentes
 	MyMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MyMesh"));
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	MoveAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("MoveAudioComponent"));
 	
 	// Jerarquía de componentes
 	SetRootComponent(MyMesh);
+	MoveAudioComponent->SetupAttachment(MyMesh);
 	SpringArm->SetupAttachment(RootComponent);
 	Camera->SetupAttachment(SpringArm);
+	
+	MoveAudioComponent->bAutoActivate = false;
 	
 	// Configuración de la cámara
 	SpringArm->TargetArmLength = 800;
@@ -30,7 +35,6 @@ ABall::ABall()
 	MyMesh->SetMassOverrideInKg(NAME_None, 100);
 	MyMesh->SetGenerateOverlapEvents(true);
 	MyMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	
 	MyMesh->OnComponentBeginOverlap.AddDynamic(this, &ABall::OnMeshBeginOverlap);
 }
 
@@ -45,6 +49,32 @@ void ABall::BeginPlay()
 	OnTakeAnyDamage.AddDynamic(this, &ABall::OnDamageTaken);
 }
 
+// Tick para comprobar el sonido de moverse
+void ABall::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	
+	if (!MoveSound || !MoveAudioComponent) return;
+
+	const float Speed = MyMesh->GetPhysicsLinearVelocity().Size();
+	if (Speed > MoveSoundMinSpeed)
+	{
+		if (!MoveAudioComponent->IsPlaying())
+		{
+			MoveAudioComponent->SetSound(MoveSound);
+			MoveAudioComponent->Play();
+		}
+	}
+	else
+	{
+		if (MoveAudioComponent->IsPlaying())
+		{
+			MoveAudioComponent->Stop();
+		}
+	}
+}
+
+// Comprobar si el player ha interactuado con una moneda o zona de muerte
 void ABall::OnMeshBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -61,6 +91,7 @@ void ABall::OnMeshBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 	}
 }
 
+// Inputs del player
 void ABall::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -72,29 +103,30 @@ void ABall::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	{
 		// Cuando MoveAction este en triggered, la función Move se va a ejecutar
 		Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABall::Move);
-		Input->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ABall::Jump);
+		Input->BindAction(JumpAction, ETriggerEvent::Started, this, &ABall::Jump);
 	}
 }
 
+// Acción de moverse
 void ABall::Move(const FInputActionValue& InputActionValue)
 {
 	FVector2D InputVector = InputActionValue.Get<FVector2D>();
-
 	MyMesh->AddForce(FVector(InputVector.Y, InputVector.X, 0) * Force);
 }
 
+// Acción de saltar
 void ABall::Jump(const FInputActionValue& InputActionValue)
 {
-	auto RayEnd = GetActorLocation() + MyMesh->GetCollisionShape().GetExtent().Z * FVector::DownVector;
-
+	FVector RayEnd = GetActorLocation() + MyMesh->GetCollisionShape().GetExtent().Z * FVector::DownVector;
+	
 	if (GetWorld()->LineTraceTestByChannel(GetActorLocation(), RayEnd, ECC_GameTraceChannel1))
 	{
-		UGameplayStatics::SpawnSound2D(GetWorld(), JumpSound);
-		//UGameplayStatics::SpawnEmitterAtLocation()
+		UGameplayStatics::SpawnSoundAtLocation(GetWorld(), JumpSound, GetActorLocation());
 		MyMesh->AddImpulse(FVector::UpVector * JumpForce);
 	}
 }
 
+// Recibir daño
 void ABall::OnDamageTaken(AActor* DamagedActor, float Damage, const class UDamageType* DamageType,
                           class AController* InstigatedBy, AActor* DamageCauser)
 {

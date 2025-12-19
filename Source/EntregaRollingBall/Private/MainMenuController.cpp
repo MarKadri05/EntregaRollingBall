@@ -10,9 +10,9 @@ void AMainMenuController::BeginPlay()
 	bShowMouseCursor = true;
 	
 	// Crear y añadir widget a la pantalla
-	if (WBP_MainMenu)
+	if (Wbp_MainMenu)
 	{
-		UUserWidget* MainMenuWidget = CreateWidget<UUserWidget>(this, WBP_MainMenu);
+		UUserWidget* MainMenuWidget = CreateWidget<UUserWidget>(this, Wbp_MainMenu);
 		MainMenuWidget->AddToViewport();
 	}
 }

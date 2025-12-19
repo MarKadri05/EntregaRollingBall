@@ -17,13 +17,15 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 	void Move(const FInputActionValue& InputActionValue);
 	void Jump(const FInputActionValue& InputActionValue);
 	
 	UFUNCTION()
-	void OnMeshBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void OnMeshBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
 private:	
 #pragma region Components
@@ -42,7 +44,7 @@ private:
 	float Force = 100000.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "My Data")
-	float JumpForce = 10000.f;
+	float JumpForce = 75000.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "My Data")
 	class UInputAction* MoveAction;
@@ -54,8 +56,20 @@ private:
 	int DamageTaken;
 #pragma endregion
 	
-	UPROPERTY()
+#pragma region Sounds
+	UPROPERTY(EditDefaultsOnly, Category= "Sounds")
+	USoundBase* MoveSound;
+	
+	UPROPERTY(EditDefaultsOnly, Category= "Sounds")
 	USoundBase* JumpSound;
+	
+	// Velocidad mínima del player para que suene el audio
+	UPROPERTY(EditDefaultsOnly, Category = "Audio")
+	float MoveSoundMinSpeed = 50.f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Audio")
+	UAudioComponent* MoveAudioComponent;
+#pragma endregion
 	
 	UPROPERTY()
 	AMyPlayerController* BallController;

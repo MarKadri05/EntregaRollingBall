@@ -11,10 +11,10 @@ class ENTREGAROLLINGBALL_API AMovingPlatform : public AActor
 	
 public:	
 	AMovingPlatform();
-	virtual void Tick(float DeltaTime) override;
-	
+
 protected:
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
 
 private:	
 #pragma region Components
@@ -28,11 +28,18 @@ private:
 	class USplineComponent* Spline;
 #pragma endregion
 	
+#pragma region Data
 	float Speed = 250.f;
+	
+	bool bIsWaiting = false;
 	
 	int32 SplinePointsNum, CurrentPointIndex;
 	
 	FVector CurrentDestination, CurrentDirection;
 	
+	FTimerHandle MovementTimerHandle;
+#pragma endregion
+	
+	void MovePlatform();
 	void CalculateNewDestination();
 };
