@@ -12,17 +12,17 @@ AMovingPlatform::AMovingPlatform()
 	SetRootComponent(Root);
 	PlatformMesh->SetupAttachment(Root);
 	Spline->SetupAttachment(Root);
-	
-	// Configuración de la plataforma
-	PlatformMesh->SetSimulatePhysics(true);
-	PlatformMesh->SetMassOverrideInKg(NAME_None, 100000000);
-	PlatformMesh->SetEnableGravity(false);
 }
 
 // Calcular puntos del spline y a cual tiene que moverse
 void AMovingPlatform::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	// Configuración de la plataforma
+	PlatformMesh->SetSimulatePhysics(true);
+	PlatformMesh->SetMassOverrideInKg(NAME_None, 100000000);
+	PlatformMesh->SetEnableGravity(false);
 	
 	SplinePointsNum = Spline->GetNumberOfSplinePoints();
 	CurrentPointIndex = 0;

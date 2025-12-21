@@ -26,12 +26,11 @@ private:
 #pragma endregion
 	
 #pragma region Data
-	UPROPERTY(EditDefaultsOnly, Category= "Data")
 	FTimerHandle BlinkTimerHandle;
 
 	UPROPERTY(EditInstanceOnly, Category= "Data")
-	bool bStartsVisible;
+	bool bStartsVisible = true;
 	
-	int32 BlinkInterval = 2.2f;
+	float BlinkInterval = 2.2f;
 #pragma endregion
 };

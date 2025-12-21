@@ -15,12 +15,10 @@ ACoin::ACoin()
 	CollisionSphere->SetupAttachment(RootComponent);
 	
 	CollisionSphere->SetSphereRadius(50.f);
+	CollisionSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	CollisionSphere->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
+	
 	MyRotator = FRotator(0, 90, 0);
-}
-
-void ACoin::BeginPlay()
-{
-	Super::BeginPlay();
 }
 
 // Rotar moneda

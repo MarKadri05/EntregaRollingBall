@@ -25,7 +25,7 @@ private:
 #pragma endregion
 	
 #pragma region Particles
-	UPROPERTY(EditAnywhere, Category= "Particle")
+	UPROPERTY(EditDefaultsOnly, Category= "Particle")
 	UParticleSystem* HitParticles;
 
 	UPROPERTY(EditDefaultsOnly, Category= "Particle")

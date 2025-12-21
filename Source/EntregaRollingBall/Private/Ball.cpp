@@ -30,23 +30,17 @@ ABall::ABall()
 	SpringArm->bInheritYaw = false;
 	SpringArm->bInheritRoll = false;
 	
+	MyMesh->OnComponentBeginOverlap.AddDynamic(this, &ABall::OnMeshBeginOverlap);
+}
+
+void ABall::BeginPlay()
+{
+	Super::BeginPlay();
 	// Físicas de la bola
 	MyMesh->SetSimulatePhysics(true);
 	MyMesh->SetMassOverrideInKg(NAME_None, 100);
 	MyMesh->SetGenerateOverlapEvents(true);
 	MyMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	MyMesh->OnComponentBeginOverlap.AddDynamic(this, &ABall::OnMeshBeginOverlap);
-}
-
-void ABall::SetBallController(AMyPlayerController* MyPlayerController)
-{
-	this->BallController = MyPlayerController;
-}
-
-
-void ABall::BeginPlay()
-{
-	Super::BeginPlay();
 	
 	OnTakeAnyDamage.AddDynamic(this, &ABall::OnDamageTaken);
 }
@@ -72,6 +66,11 @@ void ABall::Tick(float DeltaTime)
 	{
 		MoveAudioComponent->Stop();
 	}
+}
+
+void ABall::SetBallController(AMyPlayerController* MyPlayerController)
+{
+	this->BallController = MyPlayerController;
 }
 
 // Comprobar si el player ha interactuado con una moneda o zona de muerte

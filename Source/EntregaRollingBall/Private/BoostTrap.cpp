@@ -5,11 +5,11 @@ ABoostTrap::ABoostTrap()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	MyMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MyMesh"));
 	TriggerBox = CreateDefaultSubobject<UBoxComponent>(TEXT("TriggerBox"));
 	
-	SetRootComponent(Mesh);
-	TriggerBox->SetupAttachment(Mesh);
+	SetRootComponent(MyMesh);
+	TriggerBox->SetupAttachment(MyMesh);
 	
 	// Configuración del trigger
 	TriggerBox->SetBoxExtent(FVector(55.f, 55.f, 150.f));

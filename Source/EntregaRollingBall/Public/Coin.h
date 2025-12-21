@@ -13,9 +13,6 @@ public:
 	ACoin();
 
     virtual void Tick(float DeltaTime) override;
-	
-protected:
-	virtual void BeginPlay() override;
 
 private:
 #pragma region Components

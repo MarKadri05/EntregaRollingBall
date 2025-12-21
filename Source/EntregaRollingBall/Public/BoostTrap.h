@@ -15,7 +15,7 @@ public:
 private:	
 #pragma region Components
 	UPROPERTY(EditDefaultsOnly, Category= "Component")
-	UMeshComponent* Mesh;
+	UStaticMeshComponent* MyMesh;
 	
 	UPROPERTY(EditDefaultsOnly, Category= "Component")
 	class UBoxComponent* TriggerBox;
