@@ -58,5 +58,16 @@ void AMovingPlatform::CalculateNewDestination()
 {
 	CurrentDestination = Spline->GetLocationAtSplinePoint(CurrentPointIndex, ESplineCoordinateSpace::World);
 	CurrentDirection = (CurrentDestination - PlatformMesh->GetComponentLocation()).GetSafeNormal();
-	CurrentPointIndex = (CurrentPointIndex + 1) % SplinePointsNum;
+	CurrentPointIndex += SplineDirection;
+	
+	// Cambiar el sentido de la plataforma
+	if (CurrentPointIndex >= SplinePointsNum -1){
+		CurrentPointIndex = SplinePointsNum - 1;
+		SplineDirection *= -1;
+	} 
+	else if (CurrentPointIndex <= 0)
+	{
+		CurrentPointIndex = 0;
+		SplineDirection *= -1;
+	}
 }

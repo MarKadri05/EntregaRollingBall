@@ -21,7 +21,7 @@ private:
 	class UBoxComponent* TriggerBox;
 #pragma endregion
 
-	float BoostForce = 4000.f;
+	float BoostForce = 3800.f;
 	
 	UFUNCTION()
 	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,

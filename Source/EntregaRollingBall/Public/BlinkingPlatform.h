@@ -31,5 +31,7 @@ private:
 
 	UPROPERTY(EditInstanceOnly, Category= "Data")
 	bool bStartsVisible;
+	
+	int32 BlinkInterval = 2.2f;
 #pragma endregion
 };

@@ -30,7 +30,7 @@ private:
 	
 #pragma region Data
 	// Tiempo de retraso antes de activar la trampa
-	float ActivationDelay = 1.2f;
+	float ActivationDelay = 0.9f;
 	
 	// Booleanos de comprobación para ver si ha detectado al player o está activa la trampa
 	bool bTrapActive = false;

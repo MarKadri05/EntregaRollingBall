@@ -49,4 +49,5 @@ private:
 
 	void UpdateTimer();
 	void GameOver();
+	void EndGame();
 };

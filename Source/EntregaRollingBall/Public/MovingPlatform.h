@@ -29,11 +29,12 @@ private:
 #pragma endregion
 	
 #pragma region Data
-	float Speed = 250.f;
+	float Speed = 350.f;
 	
 	bool bIsWaiting = false;
 	
 	int32 SplinePointsNum, CurrentPointIndex;
+	int32 SplineDirection = 1;	//+1 adelante / -1 atrás
 	
 	FVector CurrentDestination, CurrentDirection;
 	

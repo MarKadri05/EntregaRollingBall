@@ -15,7 +15,8 @@ ABlinkingPlatform::ABlinkingPlatform()
 void ABlinkingPlatform::BeginPlay()
 {
 	Super::BeginPlay();
-	GetWorldTimerManager().SetTimer(BlinkTimerHandle, this, &ABlinkingPlatform::Blink, 2, true);
+	GetWorldTimerManager().SetTimer(BlinkTimerHandle, this, 
+		&ABlinkingPlatform::Blink, BlinkInterval, true);
 }
 
 // Cambiar estado de la plataforma

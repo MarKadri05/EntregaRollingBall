@@ -3,6 +3,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/GameModeBase.h"
+#include "Kismet/GameplayStatics.h"
 
 void AMyPlayerController::BeginPlay()
 {
@@ -20,6 +21,12 @@ void AMyPlayerController::UpdateScore()
 {
 	CurrentScore++;
 	UpdateUIScore(CurrentScore);
+	
+	// Terminar juego
+	if (CurrentScore >= 6)
+	{
+		EndGame();
+	}
 }
 
 // Actualizar contador
@@ -59,6 +66,14 @@ void AMyPlayerController::GameOver()
 	//Mostrar widget de game over
 	auto MyWidget = CreateWidget(this, GameOverWidgetClass);
 	MyWidget->AddToViewport();
+}
+
+// Terminar el juego al llegar a la puntuación necesaria y volver al menu principal
+void AMyPlayerController::EndGame()
+{
+	GetWorldTimerManager().ClearTimer(GameTime);
+	
+	UGameplayStatics::OpenLevel(this, "MainMenu");
 }
 
 void AMyPlayerController::OnPossess(APawn* InPawn)
