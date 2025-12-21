@@ -69,7 +69,7 @@ void ATimeTrap::ToggleTrap()
 	if (bTrapActive){
 		UGameplayStatics::SpawnSoundAtLocation(GetWorld(), ActivateTrapSound, GetActorLocation());
 		GetWorldTimerManager().SetTimer(DamageTimerHandle, this,
-			&ATimeTrap::ApplyDamage, 0.25f, true, 0.f);
+			&ATimeTrap::ApplyDamage, 0.1f, true, 0.f);
 	} else
 	{
 		GetWorldTimerManager().ClearTimer(DamageTimerHandle);
@@ -88,6 +88,7 @@ void ATimeTrap::ApplyDamage()
 {
 	if(OverlappingPlayer)
 	{
-		UGameplayStatics::ApplyDamage(OverlappingPlayer, 10.f, nullptr, this, UDamageType::StaticClass());
+		UGameplayStatics::ApplyDamage(OverlappingPlayer, 10.f, nullptr,
+			this, UDamageType::StaticClass());
 	}
 }
