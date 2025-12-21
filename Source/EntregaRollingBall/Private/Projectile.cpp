@@ -10,10 +10,10 @@ AProjectile::AProjectile()
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
 	
 	ProjectileMesh->SetNotifyRigidBodyCollision(true);
-
+	
 	RootComponent = ProjectileMesh;
-	ProjectileMovement->InitialSpeed = 1300.f;
-	ProjectileMovement->MaxSpeed = 1300.f;
+	ProjectileMovement->InitialSpeed = ProjectileSpeed;
+	ProjectileMovement->MaxSpeed = ProjectileSpeed;
 }
 
 void AProjectile::BeginPlay()
@@ -29,6 +29,7 @@ void AProjectile::ProjectileHit(UPrimitiveComponent* HitComponent, AActor* Other
 	FVector NormalImpulse, const FHitResult& Hit)
 {
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitParticles, Hit.Location);
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), HitSound, Hit.Location);
 	UGameplayStatics::ApplyDamage(OtherActor, 10.f, nullptr, this, UDamageType::StaticClass());
 	this->Destroy();
 }

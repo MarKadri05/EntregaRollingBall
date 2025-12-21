@@ -40,8 +40,8 @@ private:
 	UPROPERTY()
 	AActor* TargetActor = nullptr;
 	
-	float RotationSpeed = 5.f;
-	float FireRate = 2.f;
+	float RotationSpeed = 6.f;
+	float FireRate = 1.25f;
 	
 	UPROPERTY(EditDefaultsOnly, Category= "Data")
 	TSubclassOf<class AProjectile> ProjectileClass;

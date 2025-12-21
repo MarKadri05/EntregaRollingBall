@@ -43,9 +43,11 @@ void ABall::SetBallController(AMyPlayerController* MyPlayerController)
 	this->BallController = MyPlayerController;
 }
 
+
 void ABall::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	OnTakeAnyDamage.AddDynamic(this, &ABall::OnDamageTaken);
 }
 
@@ -56,8 +58,9 @@ void ABall::Tick(float DeltaTime)
 	
 	if (!MoveSound || !MoveAudioComponent) return;
 
-	const float Speed = MyMesh->GetPhysicsLinearVelocity().Size();
-	if (Speed > MoveSoundMinSpeed)
+	CheckGrounded();
+	
+	if (const float Speed = MyMesh->GetPhysicsLinearVelocity().Size(); Speed > MoveSoundMinSpeed && bIsGrounded)
 	{
 		if (!MoveAudioComponent->IsPlaying())
 		{
@@ -65,12 +68,9 @@ void ABall::Tick(float DeltaTime)
 			MoveAudioComponent->Play();
 		}
 	}
-	else
+	else if (MoveAudioComponent->IsPlaying())
 	{
-		if (MoveAudioComponent->IsPlaying())
-		{
-			MoveAudioComponent->Stop();
-		}
+		MoveAudioComponent->Stop();
 	}
 }
 
@@ -87,6 +87,7 @@ void ABall::OnMeshBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 		OtherActor->Destroy();
 	} 
 	else if (OtherActor->ActorHasTag("DeathZone")){
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation());
 		BallController->OnLoseLife();
 		this->Destroy();
 	}
@@ -118,24 +119,10 @@ void ABall::Move(const FInputActionValue& InputActionValue)
 // Acción de saltar
 void ABall::Jump(const FInputActionValue& InputActionValue)
 {
-	FHitResult HitResult;
-	FVector RayStart = GetActorLocation();
-	FVector RayEnd = RayStart + FVector::DownVector * (MyMesh->GetCollisionShape().GetExtent().Z * 1.10f);
+	if (!bIsGrounded) return;
 	
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(this);
-	
-	// LineTraceSingleByChannel: Raycast que devuelve el primer objeto que toque 
-	// ECC_GameTraceChannel1: Canal de colisión para la traza
-	DrawDebugLine(GetWorld(), RayStart, RayEnd, FColor::Red, false, 1.f, 0, 2.f);
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, RayStart, RayEnd, ECC_GameTraceChannel1, Params))
-	{
-		if (HitResult.GetActor()->ActorHasTag("Jumpable"))
-		{
-			UGameplayStatics::SpawnSoundAtLocation(GetWorld(), JumpSound, GetActorLocation());
-			MyMesh->AddImpulse(FVector::UpVector * JumpForce);
-		}
-	}
+	UGameplayStatics::SpawnSoundAtLocation(GetWorld(), JumpSound, GetActorLocation());
+	MyMesh->AddImpulse(FVector::UpVector * JumpForce);
 }
 
 // Recibir daño
@@ -145,4 +132,24 @@ void ABall::OnDamageTaken(AActor* DamagedActor, float Damage, const class UDamag
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation());
 	BallController->OnLoseLife();
 	this->Destroy();
+}
+
+// Función que comprueba si el player esta en el suelo
+void ABall::CheckGrounded()
+{
+	FHitResult HitResult;
+	FVector RayStart = GetActorLocation();
+	FVector RayEnd = RayStart + FVector::DownVector * (MyMesh->GetCollisionShape().GetExtent().Z * 1.10f);
+	
+	// Parametros para el raycast, en este caso, que ignore al player
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+	
+	bIsGrounded = false;
+	
+	// LineTraceSingleByChannel: Detectar el primer objeto con el que colisione el raycast
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, RayStart, RayEnd, ECC_Visibility, Params))
+	{
+		if (HitResult.GetActor()->ActorHasTag("Jumpable")) bIsGrounded = true;
+	}
 }

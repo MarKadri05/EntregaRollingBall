@@ -9,9 +9,11 @@ UCLASS()
 class ENTREGAROLLINGBALL_API AMyGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-	
-	AMyGameMode();
+
 public:
+	AMyGameMode();
+	
+protected:
 	UPROPERTY()
 	TSubclassOf<ABall> MyPawnClass;
 };

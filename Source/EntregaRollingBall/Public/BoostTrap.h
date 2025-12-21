@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -23,7 +21,7 @@ private:
 	class UBoxComponent* TriggerBox;
 #pragma endregion
 
-	float BoostForce = 5000.f;
+	float BoostForce = 4000.f;
 	
 	UFUNCTION()
 	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,

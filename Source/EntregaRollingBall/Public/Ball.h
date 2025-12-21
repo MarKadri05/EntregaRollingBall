@@ -44,8 +44,11 @@ private:
 	float Force = 100000.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "My Data")
-	float JumpForce = 75000.f;
+	float JumpForce = 65000.f;
 
+	// Velocidad mínima del player para que suene el audio
+	float MoveSoundMinSpeed = 250.f;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "My Data")
 	class UInputAction* MoveAction;
 
@@ -54,6 +57,8 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "My Data")
 	int DamageTaken;
+	
+	bool bIsGrounded = false;
 #pragma endregion
 	
 #pragma region Sounds
@@ -69,9 +74,6 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category= "Sounds")
 	USoundBase* DeathSound;
 	
-	// Velocidad mínima del player para que suene el audio
-	float MoveSoundMinSpeed = 200.f;
-	
 	UPROPERTY(EditDefaultsOnly, Category = "Audio")
 	UAudioComponent* MoveAudioComponent;
 #pragma endregion
@@ -80,5 +82,8 @@ private:
 	AMyPlayerController* BallController;
 	
 	UFUNCTION()
-	void OnDamageTaken(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+	void OnDamageTaken(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, 
+		class AController* InstigatedBy, AActor* DamageCauser);
+	
+	void CheckGrounded();
 };

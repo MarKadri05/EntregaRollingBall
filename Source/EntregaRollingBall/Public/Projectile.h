@@ -32,6 +32,13 @@ private:
 	UParticleSystem* TrailParticles;
 #pragma endregion
 	
+#pragma region Soundss
+	UPROPERTY(EditDefaultsOnly, Category= "Sounds")
+	USoundBase* HitSound;
+#pragma endregion
+	
+	float ProjectileSpeed = 2250.f;
+	
 	UFUNCTION()
 	void ProjectileHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 };

@@ -12,7 +12,7 @@ ATurret::ATurret()
 	RangeSphere = CreateDefaultSubobject<USphereComponent>(TEXT("RangeSphere"));
 	ProjectileSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("ProjectileSpawnPoint"));
 	
-	RangeSphere->SetSphereRadius(800.f);
+	RangeSphere->SetSphereRadius(1010.f);
 	
 	SetRootComponent(TurretBase);
 	TurretTower->SetupAttachment(GetRootComponent());
@@ -52,7 +52,6 @@ void ATurret::Tick(float DeltaTime)
 		TurretTower->SetWorldRotation(FRotator(0, RotationToTarget.Yaw, 0));
 	}
 }
-
 
 // El player entra en el rango de la torreta
 void ATurret::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
