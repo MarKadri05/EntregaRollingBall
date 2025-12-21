@@ -2,6 +2,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
+#include "MovingPlatform.h"
 #include "MyPlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/AudioComponent.h"
@@ -41,6 +42,9 @@ void ABall::BeginPlay()
 	MyMesh->SetMassOverrideInKg(NAME_None, 100);
 	MyMesh->SetGenerateOverlapEvents(true);
 	MyMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	MyMesh->BodyInstance.bLockRotation = false;
+	MyMesh->SetLinearDamping(0.3f);
+	MyMesh->SetAngularDamping(0.8f);
 	
 	OnTakeAnyDamage.AddDynamic(this, &ABall::OnDamageTaken);
 }
@@ -50,10 +54,25 @@ void ABall::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	if (!MoveSound || !MoveAudioComponent) return;
-
 	CheckGrounded();
 	
+	// Calcular velocidad de una plataforma móvil en caso de estar en una y aplicarsela a la bola
+	if (CurrentGround)
+	{
+		UStaticMeshComponent* PlatformMesh = Cast<UStaticMeshComponent>(CurrentGround->
+			GetComponentByClass(UStaticMeshComponent::StaticClass()));
+		if (PlatformMesh)
+		{
+			FVector PlatformSpeed = PlatformMesh->GetPhysicsLinearVelocity();
+			FVector BallSpeed = MyMesh->GetPhysicsLinearVelocity();
+			
+			BallSpeed.X = PlatformSpeed.X;
+			BallSpeed.Y = PlatformSpeed.Y;
+			MyMesh->SetPhysicsLinearVelocity(BallSpeed);
+		}
+	}
+	
+	if (!MoveSound || !MoveAudioComponent) return;
 	if (const float Speed = MyMesh->GetPhysicsLinearVelocity().Size(); Speed > MoveSoundMinSpeed && bIsGrounded)
 	{
 		if (!MoveAudioComponent->IsPlaying())
@@ -145,10 +164,13 @@ void ABall::CheckGrounded()
 	Params.AddIgnoredActor(this);
 	
 	bIsGrounded = false;
+	CurrentGround = nullptr;
 	
 	// LineTraceSingleByChannel: Detectar el primer objeto con el que colisione el raycast
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, RayStart, RayEnd, ECC_Visibility, Params))
 	{
-		if (HitResult.GetActor()->ActorHasTag("Jumpable")) bIsGrounded = true;
+		AActor* HitActor = HitResult.GetActor();
+		if (HitActor->ActorHasTag("Jumpable")) bIsGrounded = true;
+		if (HitActor->IsA(AMovingPlatform::StaticClass())) CurrentGround = HitActor;
 	}
 }

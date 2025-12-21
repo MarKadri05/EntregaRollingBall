@@ -44,10 +44,7 @@ private:
 	float Force = 100000.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "My Data")
-	float JumpForce = 65000.f;
-
-	// Velocidad mínima del player para que suene el audio
-	float MoveSoundMinSpeed = 250.f;
+	float JumpForce = 60000.f;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "My Data")
 	class UInputAction* MoveAction;
@@ -58,6 +55,11 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "My Data")
 	int DamageTaken;
 	
+	UPROPERTY()
+	AActor* CurrentGround = nullptr;	// Al estar en el suelo, sobre que superficie esta la bola
+	
+	// Velocidad mínima del player para que suene el audio
+	float MoveSoundMinSpeed = 250.f;
 	bool bIsGrounded = false;
 #pragma endregion
 	
