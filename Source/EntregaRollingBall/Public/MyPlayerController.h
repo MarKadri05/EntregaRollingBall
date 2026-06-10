@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "EnhancedPlayerInput.h"
+#include "RollingBallSaveGame.h"
 #include "MyPlayerController.generated.h"
 
 UCLASS()
@@ -13,6 +14,7 @@ class ENTREGAROLLINGBALL_API AMyPlayerController : public APlayerController
 public:
 	void OnLoseLife();
 	void UpdateScore();
+	void EndGame();
 	
 	UFUNCTION(BlueprintImplementableEvent)
 	void UpdateUILives(int32 NewLives);
@@ -22,6 +24,9 @@ public:
 	
 	UFUNCTION(BlueprintImplementableEvent)
 	void UpdateUITimer(int32 Minutes, int32 Seconds);
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShowVictoryScreen(int32 FinalScore, int32 FinalTime, int32 FinalCoins, const TArray<FScoreEntry>& Leaderboard);
 	
 protected:
 	virtual void BeginPlay() override;
@@ -49,5 +54,8 @@ private:
 
 	void UpdateTimer();
 	void GameOver();
-	void EndGame();
+	
+	// SaveGame
+	int32 CalculateTotalScore(int32 Coins, int32 TimeInSeconds) const;
+	TArray<FScoreEntry> SaveAndGetLeaderboard(int32 Coins, int32 TimeInSeconds);
 };

@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/GameModeBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "RollingBallSaveGame.h"
 
 void AMyPlayerController::BeginPlay()
 {
@@ -21,12 +22,6 @@ void AMyPlayerController::UpdateScore()
 {
 	CurrentScore++;
 	UpdateUIScore(CurrentScore);
-	
-	// Terminar juego
-	if (CurrentScore >= 6)
-	{
-		EndGame();
-	}
 }
 
 // Actualizar contador
@@ -72,8 +67,13 @@ void AMyPlayerController::GameOver()
 void AMyPlayerController::EndGame()
 {
 	GetWorldTimerManager().ClearTimer(GameTime);
+	bShowMouseCursor = true;
 	
-	UGameplayStatics::OpenLevel(this, "MainMenu");
+	// Guardar en el ranking y obtenerlo actualizado
+	TArray<FScoreEntry> Leaderboard = SaveAndGetLeaderboard(CurrentScore, ElapsedTime);
+	int32 FinalScore = CalculateTotalScore(CurrentScore, ElapsedTime);
+	
+	ShowVictoryScreen(FinalScore, ElapsedTime, CurrentScore, Leaderboard);
 }
 
 void AMyPlayerController::OnPossess(APawn* InPawn)
@@ -83,4 +83,48 @@ void AMyPlayerController::OnPossess(APawn* InPawn)
 	
 	//El PlayerController le comunica a la bola quien la controla
 	BallPawn->SetBallController(this);
+}
+
+// Formula para calcular la puntuación
+int32 AMyPlayerController::CalculateTotalScore(int32 Coins, int32 TimeInSeconds) const
+{
+	return FMath::Max(0, Coins * 1000 - TimeInSeconds * 10);
+}
+
+// Actualizar leaderboard
+TArray<FScoreEntry> AMyPlayerController::SaveAndGetLeaderboard(int32 Coins, int32 TimeInSeconds)
+{
+	// Cargar save existente o crear uno nuevo
+	URollingBallSaveGame* SaveGame = Cast<URollingBallSaveGame>(
+		UGameplayStatics::LoadGameFromSlot(URollingBallSaveGame::SaveSlotName, 0));
+
+	if (!SaveGame)
+	{
+		SaveGame = Cast<URollingBallSaveGame>(
+			UGameplayStatics::CreateSaveGameObject(URollingBallSaveGame::StaticClass()));
+	}
+
+	// Crear la nueva entrada
+	FScoreEntry NewEntry;
+	NewEntry.Score = CalculateTotalScore(Coins, TimeInSeconds);
+	NewEntry.TimeSeconds = TimeInSeconds;
+	NewEntry.Coins = Coins;
+	NewEntry.Date = FDateTime::Now().ToString(TEXT("%d/%m/%Y"));
+
+	// Añadir y ordenar de mayor a menor puntuación
+	SaveGame->TopScores.Add(NewEntry);
+	SaveGame->TopScores.Sort([](const FScoreEntry& A, const FScoreEntry& B)
+	{
+		return A.Score > B.Score;
+	});
+
+	// Mantener solo el top 5
+	if (SaveGame->TopScores.Num() > URollingBallSaveGame::MaxScores)
+	{
+		SaveGame->TopScores.SetNum(URollingBallSaveGame::MaxScores);
+	}
+
+	UGameplayStatics::SaveGameToSlot(SaveGame, URollingBallSaveGame::SaveSlotName, 0);
+
+	return SaveGame->TopScores;
 }
