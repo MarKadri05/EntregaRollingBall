@@ -44,6 +44,9 @@ private:
 	int32 CurrentLives = 5;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,Category= "Data", meta = (AllowPrivateAccess = "true"))
+	int32 MaxLives = CurrentLives;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,Category= "Data", meta = (AllowPrivateAccess = "true"))
 	int32 CurrentScore = 0;
 	
 	int32 ElapsedTime = 0;
@@ -56,6 +59,6 @@ private:
 	void GameOver();
 	
 	// SaveGame
-	int32 CalculateTotalScore(int32 Coins, int32 TimeInSeconds) const;
-	TArray<FScoreEntry> SaveAndGetLeaderboard(int32 Coins, int32 TimeInSeconds);
+	int32 CalculateTotalScore(int32 Coins, int32 TimeInSeconds, int32 Lives) const;
+	TArray<FScoreEntry> SaveAndGetLeaderboard(int32 Coins, int32 TimeInSeconds, int32 Lives);
 };

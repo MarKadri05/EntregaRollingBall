@@ -70,8 +70,8 @@ void AMyPlayerController::EndGame()
 	bShowMouseCursor = true;
 	
 	// Guardar en el ranking y obtenerlo actualizado
-	TArray<FScoreEntry> Leaderboard = SaveAndGetLeaderboard(CurrentScore, ElapsedTime);
-	int32 FinalScore = CalculateTotalScore(CurrentScore, ElapsedTime);
+	TArray<FScoreEntry> Leaderboard = SaveAndGetLeaderboard(CurrentScore, ElapsedTime, CurrentLives);
+	int32 FinalScore = CalculateTotalScore(CurrentScore, ElapsedTime, CurrentLives);
 	
 	ShowVictoryScreen(FinalScore, ElapsedTime, CurrentScore, Leaderboard);
 }
@@ -86,13 +86,16 @@ void AMyPlayerController::OnPossess(APawn* InPawn)
 }
 
 // Formula para calcular la puntuación
-int32 AMyPlayerController::CalculateTotalScore(int32 Coins, int32 TimeInSeconds) const
+int32 AMyPlayerController::CalculateTotalScore(int32 Coins, int32 TimeInSeconds, int32 Lives) const
 {
-	return FMath::Max(0, Coins * 1000 - TimeInSeconds * 10);
+	int32 BaseScore = FMath::Max(0, Coins * 1000 - TimeInSeconds * 10);
+	int32 LostLives = MaxLives - Lives;
+	float Multiplier = FMath::Max(0.0f, 1.0f - (LostLives * 0.05));
+	return FMath::RoundToInt(BaseScore * Multiplier);
 }
 
 // Actualizar leaderboard
-TArray<FScoreEntry> AMyPlayerController::SaveAndGetLeaderboard(int32 Coins, int32 TimeInSeconds)
+TArray<FScoreEntry> AMyPlayerController::SaveAndGetLeaderboard(int32 Coins, int32 TimeInSeconds, int32 Lives)
 {
 	// Cargar save existente o crear uno nuevo
 	URollingBallSaveGame* SaveGame = Cast<URollingBallSaveGame>(
@@ -106,7 +109,7 @@ TArray<FScoreEntry> AMyPlayerController::SaveAndGetLeaderboard(int32 Coins, int3
 
 	// Crear la nueva entrada
 	FScoreEntry NewEntry;
-	NewEntry.Score = CalculateTotalScore(Coins, TimeInSeconds);
+	NewEntry.Score = CalculateTotalScore(Coins, TimeInSeconds, Lives);
 	NewEntry.TimeSeconds = TimeInSeconds;
 	NewEntry.Coins = Coins;
 	NewEntry.Date = FDateTime::Now().ToString(TEXT("%d/%m/%Y"));
