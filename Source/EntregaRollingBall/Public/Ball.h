@@ -14,6 +14,8 @@ class ENTREGAROLLINGBALL_API ABall : public APawn
 public:
 	ABall();
 	void SetBallController(AMyPlayerController* MyPlayerController);
+	void SetGravityInverted(bool bInverted);
+	void Set2DMode(bool bEnabled);
 	
 protected:
 	virtual void BeginPlay() override;
@@ -80,6 +82,9 @@ private:
 	UAudioComponent* MoveAudioComponent;
 #pragma endregion
 	
+#pragma region Others
+	bool bIsGravityInverted = false;
+#pragma endregion
 	UPROPERTY()
 	AMyPlayerController* BallController;
 	

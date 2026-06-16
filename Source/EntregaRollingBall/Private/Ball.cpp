@@ -54,6 +54,13 @@ void ABall::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
+	// Gravedad
+	if (bIsGravityInverted)
+	{
+		// 1960 = 9.8 * 2 * 100, anula la estandar de unreal y añade la misma hacia el sentido contrario
+		MyMesh->AddForce(FVector(0.0f, 0.0f, 1960.0f) * MyMesh->GetMass());
+	}
+	
 	CheckGrounded();
 	
 	// Calcular velocidad de una plataforma móvil en caso de estar en una y aplicarsela a la bola
@@ -140,7 +147,8 @@ void ABall::Jump(const FInputActionValue& InputActionValue)
 	if (!bIsGrounded) return;
 	
 	UGameplayStatics::SpawnSoundAtLocation(GetWorld(), JumpSound, GetActorLocation());
-	MyMesh->AddImpulse(FVector::UpVector * JumpForce);
+	FVector JumpDirection = bIsGravityInverted ? FVector::DownVector : FVector::UpVector;
+	MyMesh->AddImpulse(JumpDirection * JumpForce);
 }
 
 // Recibir daño
@@ -157,7 +165,8 @@ void ABall::CheckGrounded()
 {
 	FHitResult HitResult;
 	FVector RayStart = GetActorLocation();
-	FVector RayEnd = RayStart + FVector::DownVector * (MyMesh->GetCollisionShape().GetExtent().Z * 1.10f);
+	FVector Direction = bIsGravityInverted ? FVector::UpVector : FVector::DownVector;
+	FVector RayEnd = RayStart + Direction * (MyMesh->GetCollisionShape().GetExtent().Z * 1.10f);
 	
 	// Parametros para el raycast, en este caso, que ignore al player
 	FCollisionQueryParams Params;
@@ -173,4 +182,35 @@ void ABall::CheckGrounded()
 		if (HitActor->ActorHasTag("Jumpable")) bIsGrounded = true;
 		if (HitActor->IsA(AMovingPlatform::StaticClass())) CurrentGround = HitActor;
 	}
+}
+
+// Gravedad
+void ABall::SetGravityInverted(bool bInverted)
+{
+	bIsGravityInverted = bInverted;
+}
+	
+// Modo '2D'
+void ABall::Set2DMode(bool bEnabled)
+{
+	FVector CurrentSpeed = MyMesh->GetPhysicsLinearVelocity();
+	
+	
+	// Cambio
+	if (bEnabled)
+	{
+		SpringArm->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
+		SpringArm->TargetArmLength = 1500.0f;
+		MyMesh->BodyInstance.bLockYTranslation = true;
+	}
+	// Valores por defecto
+	else
+	{
+		SpringArm->SetRelativeRotation(FRotator(-30.0f, 0.0f, 0.0f));
+		SpringArm->TargetArmLength = 800.0f;
+		MyMesh->BodyInstance.bLockYTranslation = false;
+	}
+	
+	MyMesh->RecreatePhysicsState();
+	MyMesh->SetPhysicsLinearVelocity(CurrentSpeed);
 }
