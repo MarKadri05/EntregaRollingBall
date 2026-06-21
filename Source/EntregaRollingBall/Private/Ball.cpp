@@ -193,8 +193,8 @@ void ABall::SetGravityInverted(bool bInverted)
 // Modo '2D'
 void ABall::Set2DMode(bool bEnabled)
 {
-	FVector CurrentSpeed = MyMesh->GetPhysicsLinearVelocity();
-	
+	FVector CurrentVelocity = MyMesh->GetPhysicsLinearVelocity();
+	FVector CurrentAngularVelocity = MyMesh->GetPhysicsAngularVelocityInDegrees();
 	
 	// Cambio
 	if (bEnabled)
@@ -212,5 +212,6 @@ void ABall::Set2DMode(bool bEnabled)
 	}
 	
 	MyMesh->RecreatePhysicsState();
-	MyMesh->SetPhysicsLinearVelocity(CurrentSpeed);
+	MyMesh->SetPhysicsLinearVelocity(CurrentVelocity);
+	MyMesh->SetPhysicsAngularVelocityInDegrees(CurrentAngularVelocity);
 }
