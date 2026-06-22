@@ -32,7 +32,7 @@ private:
 	UParticleSystem* TrailParticles;
 #pragma endregion
 	
-#pragma region Soundss
+#pragma region Sounds
 	UPROPERTY(EditDefaultsOnly, Category= "Sounds")
 	USoundBase* HitSound;
 #pragma endregion

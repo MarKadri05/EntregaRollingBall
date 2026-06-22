@@ -84,8 +84,8 @@ private:
 	
 #pragma region Others
 	bool bIsGravityInverted = false;
-	float TargetArmLength = 1500.f;
-	FRotator TargetSpringArmRotation = FRotator(0.0f, 0.f, 0.f);
+	float TargetArmLength = 800.f;
+	FRotator TargetSpringArmRotation = FRotator(-30.0f, 0.f, 0.f);
 #pragma endregion
 	
 	UPROPERTY()
