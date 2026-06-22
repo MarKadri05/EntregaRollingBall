@@ -61,6 +61,12 @@ void ABall::Tick(float DeltaTime)
 		MyMesh->AddForce(FVector(0.0f, 0.0f, 1960.0f) * MyMesh->GetMass());
 	}
 	
+	SpringArm->TargetArmLength = FMath::FInterpTo(SpringArm->TargetArmLength,
+		TargetArmLength, DeltaTime, 3.5f);
+	
+	SpringArm->SetRelativeRotation(FMath::RInterpTo(
+		SpringArm->GetRelativeRotation(), TargetSpringArmRotation, DeltaTime, 3.5f));
+	
 	CheckGrounded();
 	
 	// Calcular velocidad de una plataforma móvil en caso de estar en una y aplicarsela a la bola
@@ -138,7 +144,14 @@ void ABall::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void ABall::Move(const FInputActionValue& InputActionValue)
 {
 	FVector2D InputVector = InputActionValue.Get<FVector2D>();
-	MyMesh->AddForce(FVector(InputVector.Y, InputVector.X, 0) * Force);
+	
+	if (bIsGravityInverted)
+	{
+		MyMesh->AddForce(FVector(-InputVector.X, 0.0f, 0.0f) * Force);
+	} else
+	{
+		MyMesh->AddForce(FVector(InputVector.Y, InputVector.X, 0.0f) * Force);
+	}
 }
 
 // Acción de saltar
@@ -199,15 +212,15 @@ void ABall::Set2DMode(bool bEnabled)
 	// Cambio
 	if (bEnabled)
 	{
-		SpringArm->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
-		SpringArm->TargetArmLength = 1500.0f;
+		TargetArmLength = 1500.f;
+		TargetSpringArmRotation = FRotator(0.0f, 90.f, 0.f);
 		MyMesh->BodyInstance.bLockYTranslation = true;
 	}
 	// Valores por defecto
 	else
 	{
-		SpringArm->SetRelativeRotation(FRotator(-30.0f, 0.0f, 0.0f));
-		SpringArm->TargetArmLength = 800.0f;
+		TargetArmLength = 800.0f;
+		TargetSpringArmRotation = FRotator(-30.0f, 0.0f, 0.0f);
 		MyMesh->BodyInstance.bLockYTranslation = false;
 	}
 	

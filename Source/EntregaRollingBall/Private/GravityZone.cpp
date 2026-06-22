@@ -26,11 +26,15 @@ void AGravityZone::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* O
 	ABall* Ball = Cast<ABall>(OtherActor);
 	if (!Ball) return;
 
+	// Cancelar exit pendiente si vuelve a entrar
+	GetWorldTimerManager().ClearTimer(ExitTimerHandle);
+	PendingExitBall = nullptr;
+	
 	Ball->SetGravityInverted(true);
 	Ball->Set2DMode(true);
 }
 
-// Devolver gravedad a la normalidad
+// Devolver gravedad a la normalidad tras pasar x tiempo
 void AGravityZone::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
@@ -38,5 +42,17 @@ void AGravityZone::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* Oth
 	if (!Ball) return;
 
 	Ball->SetGravityInverted(false);
-	Ball->Set2DMode(false);
+	
+	PendingExitBall = Ball;
+	GetWorldTimerManager().SetTimer(ExitTimerHandle, this, &AGravityZone::ExitGravityZone,
+		0.4f, false);
+}
+
+void AGravityZone::ExitGravityZone()
+{
+	if (PendingExitBall)
+	{
+		PendingExitBall->Set2DMode(false);
+		PendingExitBall = nullptr;
+	}
 }

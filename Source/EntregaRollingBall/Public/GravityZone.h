@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Ball.h"
 #include "GameFramework/Actor.h"
 #include "GravityZone.generated.h"
 
@@ -24,7 +25,10 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	class UStaticMeshComponent* Mesh;
-
+	
+	FTimerHandle ExitTimerHandle;
+	ABall* PendingExitBall = nullptr;
+	
 	UFUNCTION()
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, 
@@ -33,4 +37,6 @@ private:
 	UFUNCTION()
 	void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, 
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	
+	void ExitGravityZone();
 };
